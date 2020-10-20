@@ -1,0 +1,4 @@
+aws_env             = "dev1"
+aws_profile         = "dev1"
+aws_region          = "ap-southeast-2"
+aws_role            = "arn:aws:iam::290102786741:role/DevAdminAccess"
