@@ -1,4 +1,4 @@
-builds
+builds/*
 .terraform
 terraform.tfstate
 terraform.tfstate.backup

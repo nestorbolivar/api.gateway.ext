@@ -17,12 +17,22 @@ module "acm" {
 module "lambda_function" {
   source = "terraform-aws-modules/lambda/aws"
 
+
   function_name = "my-lambda1"
   description   = "My awesome lambda function"
-  handler       = "index.lambda_handler"
+  handler       = "ext.my_handler"
   runtime       = "python3.8"
+  publish       = true
 
-  source_path = "src/lambda-function1"
+  source_path = "src/ext.py"
+
+  allowed_triggers = {
+    APIGatewayAny = {
+      service = "apigateway"
+      arn     = module.api_gateway.this_apigatewayv2_api_execution_arn
+    }
+  }
+
 
   tags = {
     Name = "my-lambda1"
