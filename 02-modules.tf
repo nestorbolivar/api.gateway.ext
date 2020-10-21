@@ -14,6 +14,18 @@ module "acm" {
   }
 }
 
+module "user_queue" {
+  source  = "terraform-aws-modules/sqs/aws"
+  version = "~> 2.0"
+
+  name = "api_gateway_ext"
+
+  tags = {
+    Service     = "user"
+    Environment = "dev"
+  }
+}
+
 module "lambda_function" {
   source = "terraform-aws-modules/lambda/aws"
 
@@ -63,12 +75,6 @@ module "api_gateway" {
   # Routes and integrations
   integrations = {
     "POST /" = {
-      lambda_arn             = module.lambda_function.this_lambda_function_arn
-      payload_format_version = "2.0"
-      timeout_milliseconds   = 12000
-    }
-
-    "POST /hello" = {
       lambda_arn             = module.lambda_function.this_lambda_function_arn
       payload_format_version = "2.0"
       timeout_milliseconds   = 12000
