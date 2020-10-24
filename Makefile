@@ -1,8 +1,8 @@
 apply:
-	terraform13 apply -var-file dev1.tfvar
+	terraform13 apply -var-file vars/dev1.tfvar
 
 destroy:
-	terraform13 destroy -var-file dev1.tfvar
+	terraform13 destroy -var-file vars/dev1.tfvar
 
 testing:
-	test/test_payload.sh
+	tests/test_payload.sh
