@@ -1,11 +1,6 @@
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "~> v2.0"
-  /*
-  providers = {
-    aws = aws.us-east-1
-  }
-  */
 
   domain_name = "apigate.dev1.littlepayco.de"
   zone_id     = "Z2T0CVJY2U8B5V"
@@ -56,6 +51,31 @@ module "lambda_function_python" {
   }
 }
 
+module "lambda_function_golang" {
+  source = "terraform-aws-modules/lambda/aws"
+
+
+  function_name = "lambda_function_golang"
+  description   = "Lambda function golang"
+  handler       = "main"
+  runtime       = "go1.x"
+  publish       = true
+
+  source_path = "src/main"
+
+  allowed_triggers = {
+    APIGatewayAny = {
+      service = "apigateway"
+      arn     = module.api_gateway.this_apigatewayv2_api_execution_arn
+    }
+  }
+
+
+  tags = {
+    Name = "lambda_function_golang"
+  }
+}
+
 module "api_gateway" {
   source = "terraform-aws-modules/apigateway-v2/aws"
 
@@ -75,8 +95,14 @@ module "api_gateway" {
 
   # Routes and integrations
   integrations = {
-    "POST /" = {
+    "GET /" = {
       lambda_arn             = module.lambda_function_python.this_lambda_function_arn
+      payload_format_version = "2.0"
+      timeout_milliseconds   = 12000
+    }
+
+    "POST /trans" = {
+      lambda_arn             = module.lambda_function_golang.this_lambda_function_arn
       payload_format_version = "2.0"
       timeout_milliseconds   = 12000
     }

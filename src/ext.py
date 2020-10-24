@@ -1,6 +1,4 @@
 def my_handler(event, context):
-    # message = 'Hello {} {}!'.format(event['first_name'],
-    #                                 event['last_name'])
     return {
-        'message' : 'Hello there!'
+        'revision' : 'v0.0.1'
     }
