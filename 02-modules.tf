@@ -26,12 +26,12 @@ module "user_queue" {
   }
 }
 
-module "lambda_function" {
+module "lambda_function_python" {
   source = "terraform-aws-modules/lambda/aws"
 
 
-  function_name = "my-lambda1"
-  description   = "My awesome lambda function"
+  function_name = "lambda_function_python"
+  description   = "Lambda function python"
   handler       = "ext.my_handler"
   runtime       = "python3.8"
   publish       = true
@@ -47,15 +47,15 @@ module "lambda_function" {
 
 
   tags = {
-    Name = "my-lambda1"
+    Name = "lambda_function_python"
   }
 }
 
 module "api_gateway" {
   source = "terraform-aws-modules/apigateway-v2/aws"
 
-  name          = "dev-http"
-  description   = "My awesome HTTP API Gateway"
+  name          = "external.api.gateway"
+  description   = "Internet facing api gateway"
   protocol_type = "HTTP"
 
   cors_configuration = {
@@ -68,26 +68,26 @@ module "api_gateway" {
   domain_name                 = "apigate.dev1.littlepayco.de"
   domain_name_certificate_arn = module.acm.this_acm_certificate_arn
 
-  # Access logs
-  default_stage_access_log_destination_arn = "arn:aws:logs:ap-southeast-2:290102786741:log-group:api-log-group"
-  default_stage_access_log_format          = "$context.identity.sourceIp - - [$context.requestTime] \"$context.httpMethod $context.routeKey $context.protocol\" $context.status $context.responseLength $context.requestId $context.integrationErrorMessage"
-
   # Routes and integrations
   integrations = {
     "POST /" = {
-      lambda_arn             = module.lambda_function.this_lambda_function_arn
+      lambda_arn             = module.lambda_function_python.this_lambda_function_arn
       payload_format_version = "2.0"
       timeout_milliseconds   = 12000
     }
 
     "$default" = {
-      lambda_arn = module.lambda_function.this_lambda_function_arn
+      lambda_arn = module.lambda_function_python.this_lambda_function_arn
       payload_format_version = "2.0"
       timeout_milliseconds   = 12000
     }
   }
 
+  # Access logs
+  default_stage_access_log_destination_arn = "arn:aws:logs:ap-southeast-2:290102786741:log-group:api-log-group"
+  default_stage_access_log_format          = "$context.identity.sourceIp - - [$context.requestTime] \"$context.httpMethod $context.routeKey $context.protocol\" $context.status $context.responseLength $context.requestId $context.integrationErrorMessage"
+
   tags = {
-    Name = "http-apigateway"
+    Name = "external.api.gateway"
   }
 }
