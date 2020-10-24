@@ -1,6 +1,11 @@
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "~> v2.0"
+  /*
+  providers = {
+    aws = aws.us-east-1
+  }
+  */
 
   domain_name = "apigate.dev1.littlepayco.de"
   zone_id     = "Z2T0CVJY2U8B5V"
